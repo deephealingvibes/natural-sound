@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#08051A">
+<meta name="description" content="Nature Sounds — immersive natural soundscapes for relaxation, meditation and mindful listening.">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<title>Nature Sounds</title>
+<style>
+:root{--navy:#08051A;--purple:#120A2E;--violet:#7C3AED;--neon:#A855F7;--gold:#F5C451;--white:#F8F7FF;--muted:#B8B2CC;--border:#292044;--card:#110D27}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:linear-gradient(180deg,var(--navy),var(--purple));color:var(--white)}
+body{min-height:100vh}.app{width:min(900px,calc(100% - 28px));margin:0 auto;padding:30px 0 24px}
+header{text-align:center;padding:4px 0 22px}.brand-icon{width:54px;height:54px;margin:0 auto 12px;display:block}
+h1{margin:0;font-size:clamp(28px,7vw,48px);letter-spacing:2px;font-weight:800}.sub{margin-top:8px;color:var(--muted);font-size:12px;letter-spacing:2px}.line{width:72px;height:1px;background:var(--gold);margin:16px auto}.phrase{font-size:13px;letter-spacing:1.8px;color:#ddd8ee}
+.card{background:rgba(17,13,39,.88);border:1px solid var(--border);border-radius:18px;padding:20px;margin:14px 0;box-shadow:0 12px 35px rgba(0,0,0,.18)}
+.section-title{font-size:12px;letter-spacing:2px;color:var(--gold);font-weight:700;text-transform:uppercase;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.sound-btn{border:1px solid var(--border);background:#0d0920;color:var(--white);border-radius:12px;padding:14px 8px;cursor:pointer;font-weight:650;transition:.18s}.sound-btn:hover{border-color:var(--neon)}.sound-btn.active{background:rgba(124,58,237,.25);border-color:var(--neon);box-shadow:0 0 18px rgba(168,85,247,.15)}
+.icon{font-size:22px;display:block;margin-bottom:6px}.name{font-size:12px}
+.controls{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:18px}
+button{font:inherit}.main-btn{min-width:150px;padding:14px 24px;border:0;border-radius:12px;background:var(--gold);color:var(--navy);font-weight:800;letter-spacing:.5px;cursor:pointer}.main-btn.stop{background:#241b43;color:var(--white);border:1px solid var(--border)}
+.range-row{display:grid;grid-template-columns:85px 1fr 42px;gap:10px;align-items:center;margin-top:16px;color:var(--muted);font-size:12px}.range-row input{width:100%;accent-color:var(--gold)}.value{text-align:right;color:var(--white)}
+.mix-list{display:grid;gap:11px}.mix-row{display:grid;grid-template-columns:110px 1fr 42px;gap:10px;align-items:center}.mix-row label{font-size:13px;color:#e9e5f5}.mix-row input{width:100%;accent-color:var(--neon)}
+.timer{display:flex;gap:9px;flex-wrap:wrap}.timer button{padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:#0d0920;color:var(--white);cursor:pointer}.timer button.active{border-color:var(--gold);color:var(--gold)}
+.install{text-align:center}.install button{padding:12px 18px;border-radius:11px;border:1px solid var(--gold);background:transparent;color:var(--gold);cursor:pointer;font-weight:700}
+.status{text-align:center;margin-top:12px;color:var(--muted);font-size:12px;min-height:18px}.legal{text-align:center;color:#857d9e;font-size:11px;padding:18px 0 0}.legal a{color:#aaa1bf;text-decoration:none;margin:0 7px}
+@media(max-width:650px){.grid{grid-template-columns:repeat(2,1fr)}.app{width:min(100% - 20px,900px);padding-top:18px}.card{padding:16px}.mix-row{grid-template-columns:88px 1fr 40px}}
+</style>
+</head>
+<body>
+<main class="app">
+<header>
+<img class="brand-icon" src="./icon.svg" alt="Nature Sounds">
+<h1>NATURE SOUNDS</h1>
+<div class="sub">IMMERSIVE • NATURAL • CALM</div>
+<div class="line"></div>
+<div class="phrase">LISTEN • BREATHE • BE PRESENT</div>
+</header>
+
+<section class="card">
+<div class="section-title">Choose your soundscape</div>
+<div class="grid" id="soundGrid"></div>
+<div class="controls">
+<button class="main-btn" id="playBtn">▶ PLAY</button>
+</div>
+<div class="range-row"><span>Master</span><input id="master" type="range" min="0" max="100" value="70"><span class="value" id="masterVal">70%</span></div>
+<div class="status" id="status">Ready to listen</div>
+</section>
+
+<section class="card">
+<div class="section-title">Nature mixer</div>
+<div class="mix-list" id="mixList"></div>
+</section>
+
+<section class="card">
+<div class="section-title">Sleep & relaxation timer</div>
+<div class="timer" id="timer"></div>
+<div class="status" id="timerStatus"></div>
+</section>
+
+<section class="card install">
+<button id="installBtn" hidden>INSTALL APP</button>
+</section>
+
+<footer class="legal">
+<a href="#about">About</a> · <a href="#disclaimer">Disclaimer</a> · <a href="#privacy">Privacy</a> · © 2026 Nature Sounds
+</footer>
+</main>
+
+<script>
+const SOUNDS=[
+{id:"rain",name:"Rain",emoji:"🌧️",file:"./sounds/rain.mp3"},
+{id:"ocean",name:"Ocean",emoji:"🌊",file:"./sounds/ocean.mp3"},
+{id:"forest",name:"Forest",emoji:"🌲",file:"./sounds/forest.mp3"},
+{id:"river",name:"River",emoji:"🏞️",file:"./sounds/river.mp3"},
+{id:"wind",name:"Wind",emoji:"🌬️",file:"./sounds/wind.mp3"},
+{id:"birds",name:"Birds",emoji:"🐦",file:"./sounds/birds.mp3"},
+{id:"fireplace",name:"Fireplace",emoji:"🔥",file:"./sounds/fireplace.mp3"},
+{id:"thunder",name:"Thunder",emoji:"⛈️",file:"./sounds/thunder.mp3"}
+];
+const grid=document.getElementById("soundGrid"), mixList=document.getElementById("mixList");
+const audios={}, vols={}; let current="rain", playing=false, timerId=null, deferredPrompt=null;
+
+SOUNDS.forEach(s=>{
+  vols[s.id]=s.id==="rain"?70:0;
+  const b=document.createElement("button"); b.className="sound-btn"+(s.id===current?" active":""); b.dataset.id=s.id;
+  b.innerHTML=`<span class="icon">${s.emoji}</span><span class="name">${s.name}</span>`;
+  b.onclick=()=>selectSound(s.id); grid.appendChild(b);
+
+  const a=new Audio(); a.src=s.file; a.loop=true; a.preload="none"; a.volume=0; audios[s.id]=a;
+  const row=document.createElement("div"); row.className="mix-row";
+  row.innerHTML=`<label>${s.emoji} ${s.name}</label><input type="range" min="0" max="100" value="${vols[s.id]}"><span class="value">${vols[s.id]}%</span>`;
+  const input=row.querySelector("input"), value=row.querySelector(".value");
+  input.oninput=()=>{vols[s.id]=+input.value; value.textContent=input.value+"%"; updateVolumes()};
+  mixList.appendChild(row);
+});
+function selectSound(id){
+  current=id;
+  document.querySelectorAll(".sound-btn").forEach(b=>b.classList.toggle("active",b.dataset.id===id));
+  if(vols[id]===0){vols[id]=70; const row=[...mixList.children][SOUNDS.findIndex(s=>s.id===id)]; row.querySelector("input").value=70; row.querySelector(".value").textContent="70%";}
+  SOUNDS.forEach(s=>{if(s.id!==id && vols[s.id]>0){vols[s.id]=0; const row=[...mixList.children][SOUNDS.findIndex(x=>x.id===s.id)]; row.querySelector("input").value=0; row.querySelector(".value").textContent="0%";}});
+  updateVolumes();
+  if(playing) startAll();
+}
+function updateVolumes(){
+  const master=+document.getElementById("master").value/100;
+  SOUNDS.forEach(s=>audios[s.id].volume=(vols[s.id]/100)*master);
+}
+document.getElementById("master").oninput=e=>{document.getElementById("masterVal").textContent=e.target.value+"%";updateVolumes()};
+async function startAll(){
+  try{await Promise.all(SOUNDS.filter(s=>vols[s.id]>0).map(s=>audios[s.id].play())); playing=true; document.getElementById("playBtn").textContent="■ STOP"; document.getElementById("playBtn").classList.add("stop"); document.getElementById("status").textContent="Playing • "+SOUNDS.find(s=>s.id===current).name;}
+  catch(e){document.getElementById("status").textContent="Add the nature audio files to the /sounds folder, then press Play."}
+}
+function stopAll(){SOUNDS.forEach(s=>audios[s.id].pause());playing=false;document.getElementById("playBtn").textContent="▶ PLAY";document.getElementById("playBtn").classList.remove("stop");document.getElementById("status").textContent="Ready to listen"}
+document.getElementById("playBtn").onclick=()=>playing?stopAll():startAll();
+
+[10,20,30,45,60].forEach(min=>{
+ const b=document.createElement("button"); b.textContent=min+" min"; b.onclick=()=>{
+   clearTimeout(timerId); document.querySelectorAll("#timer button").forEach(x=>x.classList.remove("active")); b.classList.add("active");
+   document.getElementById("timerStatus").textContent="Timer set for "+min+" minutes.";
+   timerId=setTimeout(()=>{stopAll();document.getElementById("timerStatus").textContent="Timer finished.";},min*60000);
+ };document.getElementById("timer").appendChild(b);
+});
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;document.getElementById("installBtn").hidden=false});
+document.getElementById("installBtn").onclick=async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();deferredPrompt=null};
+if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js?v=1").catch(()=>{});
+</script>
+</body></html>

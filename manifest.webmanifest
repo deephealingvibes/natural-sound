@@ -1,0 +1,17 @@
+{
+  "name": "Nature Sounds",
+  "short_name": "Nature Sounds",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#08051A",
+  "theme_color": "#08051A",
+  "description": "Immersive natural soundscapes.",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
